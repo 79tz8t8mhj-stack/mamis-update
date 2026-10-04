@@ -1,0 +1,57 @@
+# Zeitplan für Mamis Update
+# GitHub rechnet in UTC (= deutsche Zeit minus 1 Std. im Winter, minus 2 Std. im Sommer).
+# Wir starten deshalb dreimal – das Programm selbst entscheidet, ob es dran ist:
+# erstellt wird nur ab 5 Uhr deutscher Zeit und nur, wenn es für heute noch kein Briefing gibt.
+# Ergebnis: Das Briefing ist sommers wie winters gegen 5:20–6:00 Uhr fertig.
+
+name: Mamis Update erstellen
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+    - cron: '17 4 * * *'
+    - cron: '17 5 * * *'   # Reserve, falls ein Lauf ausfällt
+  workflow_dispatch:        # "Run workflow"-Knopf zum manuellen Starten
+    inputs:
+      force:
+        description: 'Briefing jetzt neu erstellen (auch wenn es heute schon eins gibt)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: briefing
+  cancel-in-progress: false
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Dateien holen
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Briefing erstellen
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
+        run: node generate.mjs
+
+      - name: Briefing speichern
+        run: |
+          git config user.name "mamis-update-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add briefing.json
+          if git diff --cached --quiet; then
+            echo "Nichts Neues zu speichern."
+          else
+            git commit -m "Mamis Update $(TZ=Europe/Berlin date +%F)"
+            git push
+          fi
