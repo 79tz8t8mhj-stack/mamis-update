@@ -1,0 +1,33 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "mamis update",
+      "intents": [
+        { "name": "AMAZON.CancelIntent", "samples": [] },
+        { "name": "AMAZON.HelpIntent", "samples": [] },
+        { "name": "AMAZON.StopIntent", "samples": [] },
+        { "name": "AMAZON.NavigateHomeIntent", "samples": [] },
+        { "name": "AMAZON.FallbackIntent", "samples": [] },
+        { "name": "AMAZON.YesIntent", "samples": [] },
+        { "name": "AMAZON.NoIntent", "samples": [] },
+        {
+          "name": "UpdateIntent",
+          "slots": [],
+          "samples": [
+            "gib mir das update",
+            "gib mir mein update",
+            "lies das update vor",
+            "lies mir das update vor",
+            "was gibt es neues",
+            "was ist heute los",
+            "die nachrichten",
+            "nachrichten",
+            "das briefing",
+            "update"
+          ]
+        }
+      ],
+      "types": []
+    }
+  }
+}

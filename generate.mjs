@@ -1,0 +1,236 @@
+// =====================================================================
+//  MAMIS UPDATE – Briefing-Generator
+//  Läuft jeden Morgen automatisch auf GitHub (siehe .github/workflows).
+//  1. holt das Wetter für Krefeld (Open-Meteo, kostenlos)
+//  2. lässt Claude (Sonnet 5.5) die Nachrichten recherchieren und
+//     ein ca. 2-minütiges Sprech-Briefing schreiben
+//  3. speichert das Ergebnis in briefing.json – das liest der Alexa-Skill
+// =====================================================================
+
+import { readFile, writeFile } from 'node:fs/promises';
+
+const API_KEY = process.env.ANTHROPIC_API_KEY;
+const API_URL = process.env.ANTHROPIC_API_URL || 'https://api.anthropic.com/v1/messages';
+const WEATHER_BASE = process.env.WEATHER_URL || 'https://api.open-meteo.com/v1/forecast';
+const FORCE = process.env.FORCE === 'true';
+const OUTPUT_FILE = process.env.OUTPUT_FILE || 'briefing.json';
+
+const MODEL = 'claude-sonnet-5-5';
+const KREFELD = { lat: 51.3388, lon: 6.5853 };
+const EARLIEST_HOUR = 5; // vor 5 Uhr (deutsche Zeit) wird nichts erstellt
+
+// ---------- Datum & Uhrzeit in deutscher Zeit ----------
+function berlinNow(now = new Date()) {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat('de-DE', {
+      timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit',
+      day: '2-digit', hour: '2-digit', hourCycle: 'h23',
+    }).formatToParts(now).map((x) => [x.type, x.value]),
+  );
+  return {
+    isoDate: `${p.year}-${p.month}-${p.day}`,
+    hour: Number(p.hour),
+    spoken: new Intl.DateTimeFormat('de-DE', {
+      timeZone: 'Europe/Berlin', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    }).format(now),
+  };
+}
+
+// ---------- Wetter ----------
+const WETTERCODES = {
+  0: 'klarer Himmel', 1: 'überwiegend klar', 2: 'teils bewölkt', 3: 'bedeckt',
+  45: 'Nebel', 48: 'Nebel mit Reif', 51: 'leichter Nieselregen', 53: 'Nieselregen',
+  55: 'starker Nieselregen', 56: 'gefrierender Nieselregen', 57: 'starker gefrierender Nieselregen',
+  61: 'leichter Regen', 63: 'Regen', 65: 'starker Regen', 66: 'gefrierender Regen',
+  67: 'starker gefrierender Regen', 71: 'leichter Schneefall', 73: 'Schneefall',
+  75: 'starker Schneefall', 77: 'Schneegriesel', 80: 'leichte Regenschauer',
+  81: 'Regenschauer', 82: 'heftige Regenschauer', 85: 'leichte Schneeschauer',
+  86: 'starke Schneeschauer', 95: 'Gewitter', 96: 'Gewitter mit Hagel', 99: 'schwere Gewitter mit Hagel',
+};
+
+async function getWeather() {
+  const params = new URLSearchParams({
+    latitude: KREFELD.lat, longitude: KREFELD.lon, timezone: 'Europe/Berlin', forecast_days: '1',
+    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max',
+  });
+  try {
+    const res = await fetch(`${WEATHER_BASE}?${params}`, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const d = (await res.json()).daily;
+    const r = (v) => Math.round(v[0]);
+    return `${WETTERCODES[d.weather_code[0]] ?? 'wechselhaft'}, Tiefstwert ${r(d.temperature_2m_min)} Grad, `
+      + `Höchstwert ${r(d.temperature_2m_max)} Grad, Regenwahrscheinlichkeit ${r(d.precipitation_probability_max)} Prozent, `
+      + `Wind bis ${r(d.wind_speed_10m_max)} Kilometer pro Stunde`;
+  } catch (e) {
+    console.warn(`⚠️  Wetter konnte nicht geladen werden (${e.message}) – Briefing kommt ohne Wetter.`);
+    return null;
+  }
+}
+
+// ---------- Anweisungen an Claude ----------
+const SYSTEM_PROMPT = `Du bist Redakteur eines gesprochenen Morgen-Nachrichtenbriefings namens „Mamis Update". Ein Amazon-Echo-Lautsprecher liest es vor. Die Hörerin ist eine allgemein interessierte Frau um die 50 aus Krefeld.
+
+RECHERCHE
+- Suche mit dem Websuche-Werkzeug die wichtigsten Nachrichten der letzten 24 Stunden.
+- Nutze seriöse Quellen unterschiedlicher Ausrichtung: Nachrichtenagenturen (Reuters, AP, AFP, dpa), öffentlich-rechtliche Angebote (Tagesschau, ZDF heute, BBC) und Zeitungen verschiedener Blattlinien (z. B. FAZ, Welt, NZZ, Süddeutsche, Spiegel, Handelsblatt).
+- Für Fitness, Bewegung und Ernährung: nur wissenschaftlich fundierte Quellen (Studien, Fachgesellschaften, seriöse Gesundheitsressorts). Keine Werbung, keine Wundermittel, keine Crash-Diäten.
+- Prüfe das Datum jeder Meldung. Schreibe nur, was Du in den Suchergebnissen tatsächlich gefunden hast. Lieber eine Meldung weglassen als raten.
+
+THEMENAUSWAHL (insgesamt 5 bis 6 Meldungen)
+- 3 bis 4 der wichtigsten Nachrichten aus der Welt und aus Deutschland (Politik, Wirtschaft, Gesellschaft).
+- Mindestens eine davon mit Alltagsbezug, zum Beispiel Preise, Rente, Verbraucher, Gesundheit oder Verkehr.
+- 1 bis 2 Themen aus Fitness, Bewegung oder Ernährung, konkret und alltagstauglich.
+- Wenn es passt, zum Schluss eine leichte, positive Meldung.
+
+NEUTRALITÄT – SEHR WICHTIG
+- Berichte wie eine Nachrichtenagentur: wer hat was wann getan oder gesagt, mit Zahlen und Fakten.
+- Keine Wertungen, keine moralisierenden Formulierungen, keine wertenden Adjektive, keine Vermutungen über Motive.
+- Meinungen nur klar zugeordnet („Die Regierung argumentiert …, die Opposition hält dagegen …"). Bei Streitthemen die wichtigsten Positionen beider Seiten knapp und fair nennen.
+- Sag der Hörerin nie, was sie davon halten soll. Kein Alarmismus.
+- Nenne bei jeder Meldung im Satz die Quelle, zum Beispiel „laut Reuters" oder „wie die Tagesschau berichtet".
+
+SPRECHTEXT
+- Nur Fließtext zum Vorlesen: keine Überschriften, keine Aufzählungszeichen, keine Sternchen, keine Emojis, keine Links.
+- Kurze, klare Sätze. Abkürzungen nur, wenn sie gesprochen geläufig sind (EU, USA).
+- Zwischen den Abschnitten eine Leerzeile.
+- Länge: 220 bis 280 Wörter, das sind etwa zwei Minuten.
+
+AUFBAU
+1. Kurze Begrüßung mit Wochentag und Datum, zum Beispiel: „Guten Morgen! Hier ist Mamis Update für Montag, den 5. Oktober."
+2. Das Wetter in Krefeld in ein bis zwei Sätzen (die Daten bekommst Du mitgeliefert, dafür nicht suchen).
+3. Die Nachrichten.
+4. Fitness beziehungsweise Ernährung.
+5. Ein kurzer, freundlicher Abschluss, zum Beispiel: „Das war Mamis Update. Hab einen schönen Tag!"
+
+AUSGABE
+Gib das fertige Briefing zwischen <briefing> und </briefing> aus. Innerhalb der Tags steht nur der Vorlesetext.`;
+
+function userPrompt(today, weather) {
+  const wetter = weather
+    ? `Wetterdaten für Krefeld heute (vom Wetterdienst, bitte nicht danach suchen): ${weather}.`
+    : 'Heute gibt es keine Wetterdaten. Lass das Wetter weg und sag nur kurz, dass die Wetterdaten heute fehlen.';
+  return `Heute ist ${today.spoken}.\n${wetter}\n\nRecherchiere jetzt und erstelle Mamis Update.`;
+}
+
+// ---------- Claude-API ----------
+const LOCATION = { type: 'approximate', city: 'Krefeld', region: 'Nordrhein-Westfalen', country: 'DE', timezone: 'Europe/Berlin' };
+// Moderne Websuche: filtert Ergebnisse vor dem Lesen → weniger Token, günstiger
+const TOOL_MODERN = { type: 'web_search_20260318', name: 'web_search', max_uses: 10, user_location: LOCATION, response_inclusion: 'excluded' };
+// Rückfall-Variante, falls die moderne Version mal abgelehnt wird
+const TOOL_BASIC = { type: 'web_search_20250305', name: 'web_search', max_uses: 10, user_location: LOCATION };
+
+async function callClaude(body) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10 * 60 * 1000),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(`Claude-API-Fehler ${res.status}: ${JSON.stringify(data.error ?? data)}`);
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+async function runClaude(tool, system, prompt) {
+  const messages = [{ role: 'user', content: prompt }];
+  const usage = { input: 0, output: 0, searches: 0 };
+  const texts = [];
+  const sources = new Map();
+
+  // Lange Recherchen pausiert die API manchmal ("pause_turn") – dann schicken wir einfach weiter.
+  for (let round = 0; round < 8; round++) {
+    const resp = await callClaude({ model: MODEL, max_tokens: 16000, system, messages, tools: [tool] });
+    const u = resp.usage ?? {};
+    usage.input += (u.input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0);
+    usage.output += u.output_tokens ?? 0;
+    usage.searches += u.server_tool_use?.web_search_requests ?? 0;
+
+    for (const block of resp.content ?? []) {
+      if (block.type !== 'text') continue;
+      texts.push(block.text);
+      for (const c of block.citations ?? []) if (c.url) sources.set(c.url, c.title ?? c.url);
+    }
+    if (resp.stop_reason === 'pause_turn') {
+      messages.push({ role: 'assistant', content: resp.content });
+      continue;
+    }
+    return { text: texts.join(''), usage, sources: [...sources].map(([url, title]) => ({ title, url })) };
+  }
+  throw new Error('Claude hat zu viele Pausen gebraucht – Abbruch.');
+}
+
+// ---------- Text für Alexa säubern ----------
+function cleanForSpeech(raw) {
+  return raw
+    .replace(/https?:\/\/\S+/g, '')          // keine Links vorlesen
+    .replace(/[*#_`>|]/g, '')                 // Markdown-Zeichen raus
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function extractBriefing(text) {
+  const m = text.match(/<briefing>([\s\S]*?)<\/briefing>/i);
+  if (!m) throw new Error('Claude hat kein <briefing> geliefert – altes Briefing bleibt stehen.');
+  let briefing = cleanForSpeech(m[1]);
+  if (briefing.length > 6000) { // Sicherheitsgrenze für Alexa
+    briefing = briefing.slice(0, 6000).replace(/[^.!?]*$/, '').trim();
+  }
+  return briefing;
+}
+
+// ---------- Hauptprogramm ----------
+async function main() {
+  const today = berlinNow();
+  console.log(`🕕 Deutsche Zeit: ${today.spoken}, ${today.hour} Uhr`);
+
+  if (!FORCE) {
+    if (today.hour < EARLIEST_HOUR) {
+      console.log('😴 Noch zu früh (vor 5 Uhr deutscher Zeit) – nichts zu tun.');
+      return;
+    }
+    const existing = await readFile(OUTPUT_FILE, 'utf8').then(JSON.parse).catch(() => null);
+    if (existing?.date === today.isoDate) {
+      console.log('✅ Das Briefing für heute existiert schon – nichts zu tun.');
+      return;
+    }
+  }
+  if (!API_KEY) throw new Error('Kein API-Schlüssel gefunden (Secret ANTHROPIC_API_KEY fehlt).');
+
+  const weather = await getWeather();
+  console.log(`🌦️  Wetter: ${weather ?? 'nicht verfügbar'}`);
+
+  let result;
+  try {
+    result = await runClaude(TOOL_MODERN, SYSTEM_PROMPT, userPrompt(today, weather));
+  } catch (e) {
+    if (e.status !== 400) throw e;
+    console.warn(`⚠️  Moderne Websuche abgelehnt (${e.message}) – nutze einfache Websuche.`);
+    result = await runClaude(TOOL_BASIC, SYSTEM_PROMPT, userPrompt(today, weather));
+  }
+
+  const text = extractBriefing(result.text);
+  const words = text.split(/\s+/).length;
+  const costUsd = result.usage.input * 2 / 1e6 + result.usage.output * 10 / 1e6 + result.usage.searches * 0.01;
+
+  await writeFile(OUTPUT_FILE, JSON.stringify({
+    date: today.isoDate,
+    generatedAt: new Date().toISOString(),
+    text,
+    weather,
+    sources: result.sources,
+    stats: { words, ...result.usage, estimatedCostUsd: Number(costUsd.toFixed(3)) },
+  }, null, 2) + '\n');
+
+  console.log(`\n📰 Fertig: ${words} Wörter, ${result.usage.searches} Suchen, ca. ${costUsd.toFixed(2)} $\n`);
+  console.log(text);
+}
+
+main().catch((e) => {
+  console.error(`❌ ${e.message}`);
+  process.exit(1); // GitHub schickt Dir dann eine E-Mail
+});
