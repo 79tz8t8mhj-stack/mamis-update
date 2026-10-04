@@ -71,9 +71,9 @@ async function getWeather() {
 const SYSTEM_PROMPT = `Du bist Redakteur eines gesprochenen Morgen-Nachrichtenbriefings namens „Mamis Update". Ein Amazon-Echo-Lautsprecher liest es vor. Die Hörerin ist eine allgemein interessierte Frau um die 50 aus Krefeld.
 
 RECHERCHE
-- Suche mit dem Websuche-Werkzeug die wichtigsten Nachrichten der letzten 24 Stunden.
-- Nutze seriöse Quellen unterschiedlicher Ausrichtung: Nachrichtenagenturen (Reuters, AP, AFP, dpa), öffentlich-rechtliche Angebote (Tagesschau, ZDF heute, BBC) und Zeitungen verschiedener Blattlinien (z. B. FAZ, Welt, NZZ, Süddeutsche, Spiegel, Handelsblatt).
-- Für Fitness, Bewegung und Ernährung: nur wissenschaftlich fundierte Quellen (Studien, Fachgesellschaften, seriöse Gesundheitsressorts). Keine Werbung, keine Wundermittel, keine Crash-Diäten.
+- Suche mit dem Websuche-Werkzeug die wichtigsten Nachrichten der letzten 24 Stunden. Du hast höchstens 6 Suchen – plane sie: etwa 3 für Welt und Deutschland, 1 für Wirtschaft und Verbraucher, 1 bis 2 für Fitness und Ernährung.
+- Die Suche ist auf eine feste Quellenliste beschränkt: Nachrichtenagenturen (Reuters, AP) als Faktenbasis sowie bürgerliche Medien (Welt, NZZ, FAZ, Focus, Cicero, Handelsblatt, WirtschaftsWoche, The Telegraph). Stütze Fakten möglichst auf die Agenturen. Kommentare und Meinungsstücke dieser Medien sind keine Nachrichtenquelle – übernimm daraus nur belegte Fakten.
+- Für Fitness, Bewegung und Ernährung: Ärzteblatt, Apotheken Umschau, Deutsche Gesellschaft für Ernährung, Spektrum. Keine Werbung, keine Wundermittel, keine Crash-Diäten.
 - Prüfe das Datum jeder Meldung. Schreibe nur, was Du in den Suchergebnissen tatsächlich gefunden hast. Lieber eine Meldung weglassen als raten.
 
 THEMENAUSWAHL (insgesamt 5 bis 6 Meldungen)
@@ -114,10 +114,21 @@ function userPrompt(today, weather) {
 
 // ---------- Claude-API ----------
 const LOCATION = { type: 'approximate', city: 'Krefeld', region: 'Nordrhein-Westfalen', country: 'DE', timezone: 'Europe/Berlin' };
+// Erlaubte Quellen (Variante A): Agenturen als Faktenbasis + bürgerliche Medien + Gesundheit
+const ALLOWED_DOMAINS = [
+  // Nachrichtenagenturen
+  'reuters.com', 'apnews.com',
+  // bürgerlich / konservativ / wirtschaftsliberal
+  'welt.de', 'nzz.ch', 'faz.net', 'focus.de', 'cicero.de', 'handelsblatt.com', 'wiwo.de', 'telegraph.co.uk',
+  // Gesundheit, Fitness, Ernährung
+  'aerzteblatt.de', 'apotheken-umschau.de', 'dge.de', 'spektrum.de',
+];
+const MAX_SEARCHES = 6;
+
 // Moderne Websuche: filtert Ergebnisse vor dem Lesen → weniger Token, günstiger
-const TOOL_MODERN = { type: 'web_search_20260318', name: 'web_search', max_uses: 10, user_location: LOCATION, response_inclusion: 'excluded' };
+const TOOL_MODERN = { type: 'web_search_20260318', name: 'web_search', max_uses: MAX_SEARCHES, allowed_domains: ALLOWED_DOMAINS, user_location: LOCATION, response_inclusion: 'excluded' };
 // Rückfall-Variante, falls die moderne Version mal abgelehnt wird
-const TOOL_BASIC = { type: 'web_search_20250305', name: 'web_search', max_uses: 10, user_location: LOCATION };
+const TOOL_BASIC = { type: 'web_search_20250305', name: 'web_search', max_uses: MAX_SEARCHES, allowed_domains: ALLOWED_DOMAINS, user_location: LOCATION };
 
 async function callClaude(body) {
   const res = await fetch(API_URL, {
