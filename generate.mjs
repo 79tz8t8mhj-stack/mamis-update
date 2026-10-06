@@ -72,7 +72,7 @@ const SYSTEM_PROMPT = `Du bist Redakteur eines gesprochenen Morgen-Nachrichtenbr
 
 RECHERCHE
 - Suche mit dem Websuche-Werkzeug die wichtigsten Nachrichten der letzten 24 Stunden. Du hast höchstens 6 Suchen – plane sie: etwa 3 für Welt und Deutschland, 1 für Wirtschaft und Verbraucher, 1 bis 2 für Fitness und Ernährung.
-- Die Suche ist auf eine feste Quellenliste beschränkt: Nachrichtenagenturen (Reuters, AP) als Faktenbasis sowie bürgerliche Medien (Welt, NZZ, FAZ, Focus, Cicero, Handelsblatt, WirtschaftsWoche, The Telegraph). Stütze Fakten möglichst auf die Agenturen. Kommentare und Meinungsstücke dieser Medien sind keine Nachrichtenquelle – übernimm daraus nur belegte Fakten.
+- Die Suche ist auf eine feste Quellenliste beschränkt (welche Seiten heute verfügbar sind, steht in der Nachricht des Nutzers). Bevorzuge nüchterne Nachrichtenmeldungen. Kommentare und Meinungsstücke sind keine Nachrichtenquelle – übernimm daraus nur belegte Fakten.
 - Für Fitness, Bewegung und Ernährung: Ärzteblatt, Apotheken Umschau, Deutsche Gesellschaft für Ernährung, Spektrum. Keine Werbung, keine Wundermittel, keine Crash-Diäten.
 - Prüfe das Datum jeder Meldung. Schreibe nur, was Du in den Suchergebnissen tatsächlich gefunden hast. Lieber eine Meldung weglassen als raten.
 
@@ -87,7 +87,7 @@ NEUTRALITÄT – SEHR WICHTIG
 - Keine Wertungen, keine moralisierenden Formulierungen, keine wertenden Adjektive, keine Vermutungen über Motive.
 - Meinungen nur klar zugeordnet („Die Regierung argumentiert …, die Opposition hält dagegen …"). Bei Streitthemen die wichtigsten Positionen beider Seiten knapp und fair nennen.
 - Sag der Hörerin nie, was sie davon halten soll. Kein Alarmismus.
-- Nenne bei jeder Meldung im Satz die Quelle, zum Beispiel „laut Reuters" oder „wie die Tagesschau berichtet".
+- Nenne bei jeder Meldung im Satz die Quelle, zum Beispiel „laut NZZ" oder „wie das Handelsblatt berichtet". Nenne nur Medien, aus denen Du die Meldung in den Suchergebnissen tatsächlich hast.
 
 SPRECHTEXT
 - Nur Fließtext zum Vorlesen: keine Überschriften, keine Aufzählungszeichen, keine Sternchen, keine Emojis, keine Links.
@@ -105,11 +105,11 @@ AUFBAU
 AUSGABE
 Gib das fertige Briefing zwischen <briefing> und </briefing> aus. Innerhalb der Tags steht nur der Vorlesetext.`;
 
-function userPrompt(today, weather) {
+function userPrompt(today, weather, domains) {
   const wetter = weather
     ? `Wetterdaten für Krefeld heute (vom Wetterdienst, bitte nicht danach suchen): ${weather}.`
     : 'Heute gibt es keine Wetterdaten. Lass das Wetter weg und sag nur kurz, dass die Wetterdaten heute fehlen.';
-  return `Heute ist ${today.spoken}.\n${wetter}\n\nRecherchiere jetzt und erstelle Mamis Update.`;
+  return `Heute ist ${today.spoken}.\n${wetter}\nVerfügbare Quellen für die Websuche: ${domains.join(', ')}.\n\nRecherchiere jetzt und erstelle Mamis Update.`;
 }
 
 // ---------- Claude-API ----------
@@ -174,6 +174,41 @@ async function runClaude(tool, system, prompt) {
   throw new Error('Claude hat zu viele Pausen gebraucht – Abbruch.');
 }
 
+// Manche Seiten sperren den Such-Crawler von Anthropic. Die API lehnt dann die
+// ganze Anfrage ab und nennt die gesperrten Domains. Wir werfen sie raus und
+// versuchen es erneut – so läuft das Briefing weiter, statt abzustürzen.
+function blockedDomains(err) {
+  const m = err.message.match(/not accessible to our user agent: \[([^\]]*)\]/);
+  return m ? [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]) : [];
+}
+
+async function research(today, weather) {
+  let domains = [...ALLOWED_DOMAINS];
+  let tool = TOOL_MODERN;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const result = await runClaude({ ...tool, allowed_domains: domains }, SYSTEM_PROMPT, userPrompt(today, weather, domains));
+      return { ...result, domains };
+    } catch (e) {
+      if (e.status !== 400) throw e;
+      const blocked = blockedDomains(e);
+      if (blocked.length) {
+        domains = domains.filter((d) => !blocked.includes(d));
+        console.warn(`⚠️  Gesperrte Quellen entfernt: ${blocked.join(', ')} – neuer Versuch mit ${domains.length} Quellen.`);
+        if (domains.length === 0) throw new Error('Keine erlaubte Quelle mehr übrig – bitte ALLOWED_DOMAINS anpassen.');
+        continue;
+      }
+      if (tool === TOOL_MODERN) {
+        console.warn(`⚠️  Moderne Websuche abgelehnt (${e.message}) – nutze einfache Websuche.`);
+        tool = TOOL_BASIC;
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('Websuche wurde mehrfach abgelehnt – Abbruch.');
+}
+
 // ---------- Text für Alexa säubern ----------
 function cleanForSpeech(raw) {
   return raw
@@ -215,14 +250,8 @@ async function main() {
   const weather = await getWeather();
   console.log(`🌦️  Wetter: ${weather ?? 'nicht verfügbar'}`);
 
-  let result;
-  try {
-    result = await runClaude(TOOL_MODERN, SYSTEM_PROMPT, userPrompt(today, weather));
-  } catch (e) {
-    if (e.status !== 400) throw e;
-    console.warn(`⚠️  Moderne Websuche abgelehnt (${e.message}) – nutze einfache Websuche.`);
-    result = await runClaude(TOOL_BASIC, SYSTEM_PROMPT, userPrompt(today, weather));
-  }
+  const result = await research(today, weather);
+  console.log(`🔎 Genutzte Quellen: ${result.domains.join(', ')}`);
 
   const text = extractBriefing(result.text);
   const words = text.split(/\s+/).length;
