@@ -82,13 +82,13 @@ THEMENAUSWAHL – WENIGE THEMEN, DAFÜR GRÜNDLICH
 - 3 bis 4 Hauptthemen aus der Welt und aus Deutschland (Politik, Wirtschaft, Gesellschaft), jeweils etwa 90 bis 120 Wörter.
 - Mindestens eines davon mit Alltagsbezug, zum Beispiel Preise, Rente, Verbraucher, Gesundheit oder Verkehr.
 - Optional 1 bis 2 Kurzmeldungen mit je 1 bis 2 Sätzen, nur wenn danach noch Platz ist.
-- 1 Thema aus Fitness, Bewegung oder Ernährung, etwa 60 bis 80 Wörter, mit Erklärung, warum es wirkt, und einem praktischen Tipp.
+- PFLICHT: genau 1 Thema aus Fitness, Bewegung oder Ernährung, etwa 60 bis 80 Wörter, mit Erklärung, warum es wirkt, und einem praktischen Tipp. Dieses Thema darf nie fehlen.
 
 JEDES HAUPTTHEMA ERKLÄRT
 1. Was ist passiert? Der Kern in ein bis zwei Sätzen.
 2. Wie kam es dazu? Vorgeschichte und Zusammenhänge, so dass man es auch ohne Vorwissen versteht. Fachbegriffe kurz in einfachen Worten erklären.
 3. Wer vertritt welche Position? Die wichtigsten Seiten knapp und fair.
-4. Was bedeutet das, wie geht es weiter? Konkrete nächste Schritte, Termine oder Folgen für den Alltag – nur, was in den Quellen steht.
+4. Was bedeutet das, wie geht es weiter? Konkrete nächste Schritte, Termine oder Folgen für den Alltag – nur, was in den Quellen steht. Steht dazu nichts in den Quellen, lass diesen Teil einfach weg. Sätze wie „Was als Nächstes passiert, nennen die Berichte nicht“ sind verboten.
 - Die Teile gehen als natürlicher Fließtext ineinander über, nicht als hörbare Gliederung.
 - Wechsel zwischen den Themen mit einer kurzen Überleitung, damit man beim Zuhören merkt, dass ein neues Thema beginnt.
 
