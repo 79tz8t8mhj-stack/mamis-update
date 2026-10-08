@@ -2,8 +2,8 @@
 //  MAMIS UPDATE – Briefing-Generator
 //  Läuft jeden Morgen automatisch auf GitHub (siehe .github/workflows).
 //  1. holt das Wetter für Krefeld (Open-Meteo, kostenlos)
-//  2. lässt Claude (Sonnet 5.5) die Nachrichten recherchieren und
-//     ein ca. 2-minütiges Sprech-Briefing schreiben
+//  2. lässt Claude (Haiku 5.5, Denkaufwand "medium") die Nachrichten
+//     recherchieren und ein ca. 4-minütiges Sprech-Briefing schreiben
 //  3. speichert das Ergebnis in briefing.json – das liest der Alexa-Skill
 // =====================================================================
 
@@ -15,7 +15,8 @@ const WEATHER_BASE = process.env.WEATHER_URL || 'https://api.open-meteo.com/v1/f
 const FORCE = process.env.FORCE === 'true';
 const OUTPUT_FILE = process.env.OUTPUT_FILE || 'briefing.json';
 
-const MODEL = 'claude-sonnet-5-5';
+const MODEL = 'claude-haiku-5-5';
+const EFFORT = 'medium'; // Denkaufwand: low / medium / high – medium ist der Standard für Haiku 5.5
 const KREFELD = { lat: 51.3388, lon: 6.5853 };
 const EARLIEST_HOUR = 5; // vor 5 Uhr (deutsche Zeit) wird nichts erstellt
 
@@ -71,15 +72,16 @@ async function getWeather() {
 const SYSTEM_PROMPT = `Du bist Redakteur eines gesprochenen Morgen-Nachrichtenbriefings namens „Mamis Update". Ein Amazon-Echo-Lautsprecher liest es vor. Die Hörerin ist eine allgemein interessierte Frau um die 50 aus Krefeld.
 
 RECHERCHE
-- Suche mit dem Websuche-Werkzeug die wichtigsten Nachrichten der letzten 24 Stunden. Du hast höchstens 6 Suchen – plane sie: etwa 3 für Welt und Deutschland, 1 für Wirtschaft und Verbraucher, 1 bis 2 für Fitness und Ernährung.
+- Suche mit dem Websuche-Werkzeug die wichtigsten Nachrichten der letzten 24 Stunden. Du hast höchstens 10 Suchen – plane sie: etwa 5 für Welt und Deutschland, 2 für Wirtschaft und Verbraucher, 2 bis 3 für Fitness und Ernährung.
 - Die Suche ist auf eine feste Quellenliste beschränkt (welche Seiten heute verfügbar sind, steht in der Nachricht des Nutzers). Bevorzuge nüchterne Nachrichtenmeldungen. Kommentare und Meinungsstücke sind keine Nachrichtenquelle – übernimm daraus nur belegte Fakten.
 - Für Fitness, Bewegung und Ernährung: Ärzteblatt, Apotheken Umschau, Deutsche Gesellschaft für Ernährung, Spektrum. Keine Werbung, keine Wundermittel, keine Crash-Diäten.
 - Prüfe das Datum jeder Meldung. Schreibe nur, was Du in den Suchergebnissen tatsächlich gefunden hast. Lieber eine Meldung weglassen als raten.
 
-THEMENAUSWAHL (insgesamt 5 bis 6 Meldungen)
-- 3 bis 4 der wichtigsten Nachrichten aus der Welt und aus Deutschland (Politik, Wirtschaft, Gesellschaft).
-- Mindestens eine davon mit Alltagsbezug, zum Beispiel Preise, Rente, Verbraucher, Gesundheit oder Verkehr.
-- 1 bis 2 Themen aus Fitness, Bewegung oder Ernährung, konkret und alltagstauglich.
+THEMENAUSWAHL (insgesamt 9 bis 11 Meldungen)
+- 6 bis 7 der wichtigsten Nachrichten aus der Welt und aus Deutschland (Politik, Wirtschaft, Gesellschaft). Die zwei bis drei wichtigsten davon etwas ausführlicher mit Hintergrund: Was ist passiert, warum ist es wichtig, wie geht es weiter.
+- Mindestens zwei davon mit Alltagsbezug, zum Beispiel Preise, Rente, Verbraucher, Gesundheit oder Verkehr.
+- 2 bis 3 Themen aus Fitness, Bewegung oder Ernährung, konkret und alltagstauglich, gern mit einem praktischen Tipp.
+- Lieber eine Meldung mehr als die einzelnen Meldungen künstlich aufzublähen.
 - Wenn es passt, zum Schluss eine leichte, positive Meldung.
 
 NEUTRALITÄT – SEHR WICHTIG
@@ -93,7 +95,7 @@ SPRECHTEXT
 - Nur Fließtext zum Vorlesen: keine Überschriften, keine Aufzählungszeichen, keine Sternchen, keine Emojis, keine Links.
 - Kurze, klare Sätze. Abkürzungen nur, wenn sie gesprochen geläufig sind (EU, USA).
 - Zwischen den Abschnitten eine Leerzeile.
-- Länge: 220 bis 280 Wörter, das sind etwa zwei Minuten.
+- Länge: 480 bis 560 Wörter, das sind etwa vier Minuten. Halte diese Länge unbedingt ein – zu kurz ist genauso falsch wie zu lang.
 
 AUFBAU
 1. Kurze Begrüßung mit Wochentag und Datum, zum Beispiel: „Guten Morgen! Hier ist Mamis Update für Montag, den 5. Oktober."
@@ -123,7 +125,7 @@ const ALLOWED_DOMAINS = [
   // Gesundheit, Fitness, Ernährung
   'aerzteblatt.de', 'apotheken-umschau.de', 'dge.de', 'spektrum.de',
 ];
-const MAX_SEARCHES = 6;
+const MAX_SEARCHES = 10;
 
 // Moderne Websuche: filtert Ergebnisse vor dem Lesen → weniger Token, günstiger
 const TOOL_MODERN = { type: 'web_search_20260318', name: 'web_search', max_uses: MAX_SEARCHES, allowed_domains: ALLOWED_DOMAINS, user_location: LOCATION, response_inclusion: 'excluded' };
@@ -148,17 +150,23 @@ async function callClaude(body) {
 
 async function runClaude(tool, system, prompt) {
   const messages = [{ role: 'user', content: prompt }];
-  const usage = { input: 0, output: 0, searches: 0 };
+  const usage = { input: 0, output: 0, searches: 0, costUsd: 0 };
   const texts = [];
   const sources = new Map();
 
   // Lange Recherchen pausiert die API manchmal ("pause_turn") – dann schicken wir einfach weiter.
   for (let round = 0; round < 8; round++) {
-    const resp = await callClaude({ model: MODEL, max_tokens: 16000, system, messages, tools: [tool] });
+    const resp = await callClaude({ model: MODEL, max_tokens: 16000, output_config: { effort: EFFORT }, system, messages, tools: [tool] });
     const u = resp.usage ?? {};
-    usage.input += (u.input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0);
-    usage.output += u.output_tokens ?? 0;
-    usage.searches += u.server_tool_use?.web_search_requests ?? 0;
+    const inTok = (u.input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0);
+    const outTok = u.output_tokens ?? 0;
+    const searches = u.server_tool_use?.web_search_requests ?? 0;
+    usage.input += inTok;
+    usage.output += outTok;
+    usage.searches += searches;
+    // Haiku 5.5: 0,10 $ / 0,50 $ pro Mio. Token – über 100.000 Token pro Anfrage 0,50 $ / 2,50 $. Suche: 0,01 $ pro Stück.
+    const big = inTok > 100000;
+    usage.costUsd += inTok * (big ? 0.5 : 0.1) / 1e6 + outTok * (big ? 2.5 : 0.5) / 1e6 + searches * 0.01;
 
     for (const block of resp.content ?? []) {
       if (block.type !== 'text') continue;
@@ -255,7 +263,8 @@ async function main() {
 
   const text = extractBriefing(result.text);
   const words = text.split(/\s+/).length;
-  const costUsd = result.usage.input * 2 / 1e6 + result.usage.output * 10 / 1e6 + result.usage.searches * 0.01;
+  const { costUsd, ...usage } = result.usage;
+  if (words < 400) console.warn(`⚠️  Briefing ist mit ${words} Wörtern kürzer als geplant (Ziel: 480–560).`);
 
   await writeFile(OUTPUT_FILE, JSON.stringify({
     date: today.isoDate,
@@ -263,7 +272,7 @@ async function main() {
     text,
     weather,
     sources: result.sources,
-    stats: { words, ...result.usage, estimatedCostUsd: Number(costUsd.toFixed(3)) },
+    stats: { words, model: MODEL, effort: EFFORT, ...usage, estimatedCostUsd: Number(costUsd.toFixed(3)) },
   }, null, 2) + '\n');
 
   console.log(`\n📰 Fertig: ${words} Wörter, ${result.usage.searches} Suchen, ca. ${costUsd.toFixed(2)} $\n`);
