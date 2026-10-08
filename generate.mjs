@@ -89,6 +89,7 @@ WISSENSCHAFTSTHEMA – FÜR EINE KUNDIGE HÖRERIN
 - Stelle eine neue Studie oder einen neuen Forschungsbefund vor, möglichst aus den letzten Wochen, der auch für Kundige überraschend oder neu ist.
 - Erkläre: Wer hat was untersucht, wie (Art der Studie, Zahl der Teilnehmenden, Dauer), was kam heraus (mit Zahlen), welcher Mechanismus im Körper dahintersteckt, und wo die Grenzen liegen (zum Beispiel: Beobachtungsstudie zeigt Zusammenhang, nicht Ursache; nur an Mäusen getestet; kleine Stichprobe).
 - Fachbegriffe darfst Du verwenden, erkläre sie aber in einem Halbsatz.
+- Steig direkt mit dem Befund ein. Keine Komplimente, keine Anbiederung, kein Hinweis darauf, dass die Hörerin sich auskennt (nicht: „für Dich als Kennerin“, „das wird Dich interessieren“).
 - Ein praktischer Bezug nur, wenn er sich wirklich aus der Studie ergibt – keine Allerwelts-Tipps.
 
 JEDES HAUPTTHEMA ERKLÄRT
@@ -103,7 +104,7 @@ NEUTRALITÄT – SEHR WICHTIG
 - Berichte wie eine Nachrichtenagentur: wer hat was wann getan oder gesagt, mit Zahlen und Fakten.
 - Keine Wertungen, keine moralisierenden Formulierungen, keine wertenden Adjektive, keine Vermutungen über Motive.
 - Meinungen nur klar zugeordnet („Die Regierung argumentiert …, die Opposition hält dagegen …"). Bei Streitthemen die wichtigsten Positionen beider Seiten knapp und fair nennen.
-- Sag der Hörerin nie, was sie davon halten soll. Kein Alarmismus.
+- Sag der Hörerin nie, was sie davon halten soll. Kein Alarmismus. Keine Schmeicheleien und keine Anbiederung – sachlicher, freundlicher Nachrichtenton.
 - Keine Widersprüche: Wenn Du einen Fakt genannt hast, sag danach nicht, er sei unbekannt. Lies das Briefing vor der Ausgabe einmal auf Widersprüche durch.
 - Nenne bei jeder Meldung im Satz die Quelle, zum Beispiel „laut NZZ" oder „wie das Handelsblatt berichtet". Nenne nur Medien, aus denen Du die Meldung in den Suchergebnissen tatsächlich hast.
 
@@ -165,9 +166,23 @@ async function callClaude(body) {
   return data;
 }
 
+// Haiku 5.5, Preise pro Mio. Token. Ab 100.000 Token Prompt-Länge gilt der teurere Tarif.
+//                 Input   Cache schreiben   Cache lesen   Output
+// bis 100.000:    0,10    0,125             0,01          0,50
+// darüber:        0,50    0,625             0,05          2,50
+function tokenCost(u) {
+  const input = u.input_tokens ?? 0;
+  const cacheRead = u.cache_read_input_tokens ?? 0;
+  const cacheWrite = u.cache_creation_input_tokens ?? 0;
+  const output = u.output_tokens ?? 0;
+  const f = input + cacheRead + cacheWrite > 100000 ? 5 : 1;
+  const usd = f * (input * 0.10 + cacheWrite * 0.125 + cacheRead * 0.01 + output * 0.50) / 1e6;
+  return { input, cacheRead, cacheWrite, output, usd };
+}
+
 async function runClaude(tool, system, prompt) {
   const messages = [{ role: 'user', content: prompt }];
-  const usage = { input: 0, output: 0, searches: 0, costUsd: 0 };
+  const usage = { input: 0, cacheRead: 0, cacheWrite: 0, output: 0, searches: 0, costUsd: 0 };
   const texts = [];
   const sources = new Map();
   let nudged = false;
@@ -176,18 +191,20 @@ async function runClaude(tool, system, prompt) {
   for (let round = 0; round < 8; round++) {
     const resp = await callClaude({
       model: MODEL, max_tokens: 16000, output_config: { effort: EFFORT }, system, messages, tools: [tool],
+      cache_control: { type: 'ephemeral' }, // Prompt-Caching: wiederholte Textteile kosten nur noch 10 %
       ...(nudged ? { tool_choice: { type: 'none' } } : {}),
     });
     const u = resp.usage ?? {};
-    const inTok = (u.input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0);
-    const outTok = u.output_tokens ?? 0;
     const searches = u.server_tool_use?.web_search_requests ?? 0;
-    usage.input += inTok;
-    usage.output += outTok;
     usage.searches += searches;
-    // Haiku 5.5: 0,10 $ / 0,50 $ pro Mio. Token – über 100.000 Token pro Anfrage 0,50 $ / 2,50 $. Suche: 0,01 $ pro Stück.
-    const big = inTok > 100000;
-    usage.costUsd += inTok * (big ? 0.5 : 0.1) / 1e6 + outTok * (big ? 2.5 : 0.5) / 1e6 + searches * 0.01;
+    usage.costUsd += searches * 0.01;
+    // Wenn die API die einzelnen Suchrunden aufschlüsselt, rechnen wir pro Runde – sonst mit der Gesamtsumme.
+    for (const it of (Array.isArray(u.iterations) && u.iterations.length ? u.iterations : [u])) {
+      const c = tokenCost(it);
+      usage.input += c.input; usage.cacheRead += c.cacheRead; usage.cacheWrite += c.cacheWrite;
+      usage.output += c.output; usage.costUsd += c.usd;
+    }
+    console.log(`   Runde ${round + 1}: ${JSON.stringify(u)}`);
 
     for (const block of resp.content ?? []) {
       if (block.type !== 'text') continue;
