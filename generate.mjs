@@ -163,10 +163,14 @@ async function runClaude(tool, system, prompt) {
   const usage = { input: 0, output: 0, searches: 0, costUsd: 0 };
   const texts = [];
   const sources = new Map();
+  let nudged = false;
 
   // Lange Recherchen pausiert die API manchmal ("pause_turn") – dann schicken wir einfach weiter.
   for (let round = 0; round < 8; round++) {
-    const resp = await callClaude({ model: MODEL, max_tokens: 16000, output_config: { effort: EFFORT }, system, messages, tools: [tool] });
+    const resp = await callClaude({
+      model: MODEL, max_tokens: 16000, output_config: { effort: EFFORT }, system, messages, tools: [tool],
+      ...(nudged ? { tool_choice: { type: 'none' } } : {}),
+    });
     const u = resp.usage ?? {};
     const inTok = (u.input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0);
     const outTok = u.output_tokens ?? 0;
@@ -185,6 +189,15 @@ async function runClaude(tool, system, prompt) {
     }
     if (resp.stop_reason === 'pause_turn') {
       messages.push({ role: 'assistant', content: resp.content });
+      continue;
+    }
+    // Sicherheitsnetz: Hat Claude das Briefing nicht in <briefing>-Tags geliefert, einmal nachfordern – ohne neue Suchen.
+    if (!/<briefing>[\s\S]*?<\/briefing>/i.test(texts.join('')) && !nudged) {
+      console.warn(`⚠️  Kein <briefing> erhalten (stop_reason: ${resp.stop_reason}) – fordere es einmal nach.`);
+      nudged = true;
+      messages.push({ role: 'assistant', content: resp.content });
+      messages.push({ role: 'user', content: 'Du hast das Briefing noch nicht ausgegeben. Schreibe jetzt auf Basis Deiner bisherigen Recherche das vollständige Briefing nach allen Vorgaben, ohne weitere Suchen. Gib nur das Briefing zwischen <briefing> und </briefing> aus.' });
+      texts.length = 0;
       continue;
     }
     return { text: texts.join(''), usage, sources: [...sources].map(([url, title]) => ({ title, url })) };
