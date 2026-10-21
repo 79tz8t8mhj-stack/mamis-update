@@ -1,79 +1,18 @@
 {
-  "date": "2026-10-20",
-  "generatedAt": "2026-10-20T03:41:01.502Z",
-  "text": "Guten Morgen! Hier ist Mamis Update für Dienstag, den 20. Oktober. In Krefeld regnet es heute stark, bei Temperaturen zwischen 6 und 15 Grad. Die Regenwahrscheinlichkeit liegt bei 43 Prozent, dazu weht der Wind mit bis zu 18 Kilometern pro Stunde.\n\nBeginnen wir mit dem Ölmarkt, der direkt aufs Tanken wirkt. Im Hintergrund steht der Iran-Krieg. Ein Plan aus dem März sieht vor, dass 400 Millionen Barrel aus staatlichen Notvorräten an den Markt gehen. Jetzt soll er schneller umgesetzt werden. Dabei sollen Dieselvorräte zuerst auf den Markt. Unter dem Druck der großen Industrienationen, zu denen Deutschland zählt, soll binnen vier Monaten eine Menge von 100 Millionen Barrel fließen. Ob der Sprit dadurch günstiger wird, ist offen. Eine verlässliche Zahl fehlt bislang; Paris kalkuliert mit einem Abschlag von 12 bis 18 Cent je Liter Diesel. Knappheit beim Diesel dürfte laut Energiebehörde noch bis 2027 andauern. Im Wirtschaftsministerium hält man die Versorgung für gesichert. Die Wirtschaftszeitung Handelsblatt rechnet laut Einordnung kaum mit einem dauerhaften Preisrückgang an der Tankstelle. Zugleich meldeten die iranischen Revolutionsgarden laut Handelsblatt, ein Riesentanker sei in der Meerenge Hormus in eine Explosion geraten.\n\nWechseln wir nach Berlin. Die Linke erreichte im September gut ein Viertel der Stimmen und lag damit weit vorn. Inzwischen haben die Grünen auf einem kleinen Parteitag mehrheitlich für Verhandlungen gestimmt, und die SPD-Führung zog nach. Die Linke entscheidet erst am 31. Oktober auf einem Parteitag. Den Termin bestimmten die Herbstferien in Berlin. Gelingt der Beschluss, wäre ein Start Anfang November denkbar. Bundeskanzler Friedrich Merz hat SPD und Grüne mehrfach eindringlich davon abgeraten, mit der Linken zu koalieren. Eine Gruppe von SPD-Bundestagsabgeordneten stellt die Verlässlichkeit des Berliner Landesverbands in Frage, wegen wiederkehrender Antisemitismus-Konflikte und Kontakten ins Umfeld eines kriminellen Clans, und lehnt Verhandlungen unter diesen Bedingungen ab. Die drei Parteien verweisen dagegen auf ein gemeinsames Papier gegen Antisemitismus, das bei einer Koalition in den Vertrag einfließen soll. Am heftigsten umstritten ist der Plan, rund 160.000 Wohnungen von fünf Konzernen in Gemeinbesitz zu überführen, gegen Entschädigung. Parallel bespricht die Linksfraktion heute, wie sie mit Vanessa Emde umgeht. Ihr könnte der Rauswurf aus der Fraktion drohen, nachdem sie wegen ihrer israelkritischen Positionen mehrfach Diskussionen ausgelöst hatte.\n\nAuch an der Börse wächst die Nervosität. Weltweit haben Technologiewerte innerhalb von sieben Tagen zwei Ausverkaufsphasen erlebt. Die ING-Bank nennt das eine KI-Korrektur. Bloomberg-Daten beziffern das Minus der amerikanischen Chipkonzerne binnen einer Woche auf über eine Billion Dollar. Dahinter steckt eine wachsende Skepsis, ob Erlöse aus künstlicher Intelligenz die gewaltigen Ausgaben je einspielen. Der Dax bekommt die Turbulenzen weniger deutlich zu spüren.\n\nNun zu einem Befund aus der Ernährungsforschung, der über den üblichen Blick auf Nährstoffe hinausgeht. Ein Team der Virginia Tech um Alexandra DiFeliceantonio verglich zwei Mahlzeiten, deren Nährwerte praktisch gleich waren, von denen eine stark verarbeitet war. Die Veröffentlichung im Fachmagazin Nature Metabolism erschien Anfang Oktober. Mitgemacht haben 57 Menschen mit Normalgewicht, alle zwischen 18 und 45 Jahre alt. Bei 32 davon fanden beide Testdurchläufe an verschiedenen Tagen statt. Der Insulinspiegel schnellte nach der stark verarbeiteten Mahlzeit deutlich höher, während der Blutzucker praktisch gleich blieb. In diesem Zeitfenster übertraf die Kurve die der unverarbeiteten Vergleichsmahlzeit. Gleichzeitig verbrannte der Körper weniger Kohlenhydrate. Hirnaktivität im Striatum, einem Teil des Belohnungssystems, hing mit diesen Stoffwechselunterschieden zusammen. Die Grenzen sind deutlich. Die Forschenden testeten lediglich ein einziges Mahlzeitenpaar mit je rund 300 Kalorien, und die Teilnehmenden waren jung und gesund. Obwohl die Eiweißmenge angeglichen war, stammte das Eiweiß aus unterschiedlichen Quellen, was das Ergebnis beeinflusst haben könnte. Längere Zeiträume und andere Bevölkerungsgruppen sind noch nicht geprüft.\n\nDas war Mamis Update. Hab einen schönen Tag!",
-  "weather": "starker Nieselregen, Tiefstwert 6 Grad, Höchstwert 15 Grad, Regenwahrscheinlichkeit 43 Prozent, Wind bis 18 Kilometer pro Stunde",
-  "sources": [
-    {
-      "title": "Treffen in Paris: IEA beschleunigt Freigabe von Ölreserven",
-      "url": "https://www.handelsblatt.com/politik/deutschland/treffen-in-paris-iea-beschleunigt-freigabe-von-oelreserven-diesel-im-fokus/100260529.html"
-    },
-    {
-      "title": "Hohe Kraftstoffpreise: IEA will Ölreserven schneller freigeben",
-      "url": "https://www.handelsblatt.com/politik/deutschland/hohe-kraftstoffpreise-iea-will-oelreserven-schneller-freigeben/100262614.html"
-    },
-    {
-      "title": "Hohe Kraftstoffpreise: IEA will Ölreserven schneller freigeben",
-      "url": "https://www.wiwo.de/unternehmen/hohe-kraftstoffpreise-iea-will-oelreserven-schneller-freigeben/100262618.html"
-    },
-    {
-      "title": "Energiemarkt: Was bringt die Freigabe von Öl-Reserven?",
-      "url": "https://www.handelsblatt.com/politik/deutschland/energiemarkt-was-bringt-die-freigabe-von-oel-reserven/100259489.html"
-    },
-    {
-      "title": "Iran-Krieg: UN kürzen Nahrungsmittelhilfe für 700.000 Palästinenser",
-      "url": "https://www.handelsblatt.com/politik/international/iran-krieg-un-kuerzen-nahrungsmittelhilfe-fuer-700.000-palaestinenser/100136895.html"
-    },
-    {
-      "title": "Regierungsbildung in Berlin: Rot-Grün-Rot sondiert nach Einigung ...",
-      "url": "https://www.handelsblatt.com/politik/deutschland/nach-der-berlin-wahl-linke-gruene-und-spd-in-berlin-beschliessen-sondierungen/100260654.html"
-    },
-    {
-      "title": "Umstrittene Abgeordnete: Berliner Linke berät über umstrittene ...",
-      "url": "https://www.wiwo.de/politik/deutschland/umstrittene-abgeordnete-berliner-linke-beraet-ueber-umstrittene-abgeordnete/100263397.html"
-    },
-    {
-      "title": "Berlin-Wahl: Linke, Grüne und SPD streben Koalitionsgespräche an",
-      "url": "https://www.wiwo.de/politik/deutschland/nach-der-wahl-berlin-linke-gruene-und-spd-streben-koalitionsgespraeche-an/100262975.html"
-    },
-    {
-      "title": "Regierungsbildung: Zwei Parteien in Berlin entscheiden über ...",
-      "url": "https://www.handelsblatt.com/politik/deutschland/regierungsbildung-zwei-parteien-in-berlin-entscheiden-ueber-koalitionsgespraeche/100263126.html"
-    },
-    {
-      "title": "Aktien: Billionen-Konzerne verlieren 40 Prozent",
-      "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/aktien-billionen-konzerne-verlieren-40-prozent-ki-korrektur-erfasst-boersen/100262410.html"
-    },
-    {
-      "title": "Today: Wie sollen Anleger mit der KI-Korrektur umgehen?",
-      "url": "https://www.handelsblatt.com/audio/today/today-wie-sollen-anleger-mit-der-ki-korrektur-umgehen/100263342.html"
-    },
-    {
-      "title": "Börse aktuell: Börsennachrichten & der Aktienmarkt von heute ...",
-      "url": "https://www.handelsblatt.com/finanzen/maerkte/"
-    },
-    {
-      "title": "Ultraverarbeitete Mahlzeit: Andere Stoffwechselreaktion trotz ...",
-      "url": "https://www.scinexx.de/news/medizin/ultraverarbeitete-mahlzeit-andere-stoffwechselreaktion-trotz-aehnlicher-naehrwerte/"
-    },
-    {
-      "title": "Metabolic and neural responses to ultraprocessed foods: a randomized, ...",
-      "url": "https://www.nature.com/articles/s42255-026-01619-4"
-    },
-    {
-      "title": "Food processing influences metabolism and brain activity",
-      "url": "https://www.eurekalert.org/news-releases/1146228"
-    }
-  ],
+  "date": "2026-10-21",
+  "generatedAt": "2026-10-21T03:40:08.188Z",
+  "text": "Guten Morgen! Hier ist Mamis Update für Mittwoch, den 21. Oktober.\n\nIn Krefeld erwartet dich heute starker Nieselregen bei Temperaturen zwischen 10 und 14 Grad. Die Regenwahrscheinlichkeit liegt bei 88 Prozent, dazu weht der Wind mit bis zu 20 Kilometern pro Stunde. Der Schirm sollte also griffbereit sein.\n\nZuerst zur Weltpolitik. US-Präsident Donald Trump hat am Montag in Washington erklärt, er würde sich mit dem russischen Präsidenten Wladimir Putin und Chinas Staatschef Xi Jinping treffen, um über Atomwaffen und nukleare Abrüstung zu sprechen. Laut Handelsblatt könnte das im November beim Gipfel der Asiatisch-Pazifischen Wirtschaftsgemeinschaft im chinesischen Shenzhen stattfinden. Der Kreml hat sich demnach einverstanden erklärt, China hat die Pläne bislang nicht bestätigt. Parallel wird der Ton zwischen Washington und Kiew rauer. Trump sagte, die Ukraine habe den USA nichts zurückgegeben, obwohl Amerika viel geleistet habe. Das Portal Axios berichtet, Präsident Selenskyj beklage, dass Washington Waffenlieferungen zurückhalte. Ein hochrangiger Beamter im Verteidigungsministerium widerspricht dem gegenüber der Deutschen Presse-Agentur: Am Programm, über das Nato-Staaten US-Waffen für die Ukraine kaufen, habe sich nichts geändert. Bei russischen Luftangriffen starben laut Wirtschaftswoche am Dienstag mindestens neun Zivilisten.\n\nVom Krieg zum Ölmarkt, denn auch dort gibt es Bewegung. Laut Wirtschaftswoche, unter Berufung auf die Agentur dpa, stieg der Preis für ein Barrel der Nordsee-Sorte Brent am Dienstag zeitweise auf 111 Dollar. Das war der höchste Stand seit Mai. Auslöser sind Sorgen vor weiteren Angriffen auf Öltanker in der Straße von Hormus, einer wichtigen Meerenge am Persischen Golf. Hintergrund: Der Iran hatte die Passage zu Beginn der amerikanisch-israelischen Angriffe Ende Februar weitgehend gesperrt. Inzwischen fließen laut dem Datenanbieter Vortexa wieder etwa 65 bis 70 Prozent der Ölmenge von vor dem Krieg durch die Meerenge. Die USA begründeten Angriffe auf iranische Tanker laut Handelsblatt mit Vergeltung für Angriffe auf ein US-Kriegsschiff. Der Ölpreis beeinflusst unter anderem die Preise für Benzin, Diesel und Heizöl.\n\nAuch die Wirtschaft in Deutschland hat eine Nachricht. Der Internationale Währungsfonds hat seine Prognose für 2026 angehoben: Er erwartet nun 1,3 Prozent Wachstum, fast doppelt so viel wie im Juli. Das deckt sich, wie Handelsblatt berichtet, mit der Prognose der Bundesregierung. Wirtschaftsministerin Katherina Reiche von der CDU führt rund zwei Drittel der Verbesserung auf staatliche Investitionen in Infrastruktur und Verteidigung zurück, ein Drittel auf Exporte.\n\nNun zum Wissenschaftsthema. Laut Ärzteblatt vom 14. Oktober zeigt eine randomisiert-kontrollierte Studie, dass bei Menschen mit früh begonnenem Typ-2-Diabetes eine niedrigkalorische Diät in Kombination mit einem angeleiteten Bewegungsprogramm hohe Remissionsraten erreicht. In der Überschrift steht die Zahl 50 Prozent. Remission bedeutet, dass die Erkrankung so weit zurückgeht, dass die Blutzuckerwerte wieder im unauffälligen Bereich liegen. Randomisiert heißt, die Teilnehmenden wurden per Zufall den Gruppen zugeordnet. Die Ergebnisse wurden auf dem Kongress der Europäischen Diabetes-Gesellschaft in Mailand vorgestellt und parallel im Fachjournal The Lancet Regional Health Americas veröffentlicht. Im Körper zeigte sich, dass das Fettgewebe abnahm, während fettfreie Masse und Muskelvolumen erhalten blieben. Zugleich stieg die körperliche Fitness. Die Ergebnisse betreffen Menschen, bei denen die Erkrankung früh begonnen hat. Ob sie sich auf andere Gruppen übertragen lassen, zeigt die Studie für diese Frage nicht.\n\nDas war Mamis Update. Hab einen schönen Tag!",
+  "weather": "starker Nieselregen, Tiefstwert 10 Grad, Höchstwert 14 Grad, Regenwahrscheinlichkeit 88 Prozent, Wind bis 20 Kilometer pro Stunde",
+  "sources": [],
   "stats": {
-    "words": 590,
+    "words": 511,
     "model": "claude-haiku-5-5",
     "effort": "medium",
-    "input": 12,
-    "cacheRead": 237279,
-    "cacheWrite": 102156,
-    "output": 31069,
-    "searches": 7,
-    "estimatedCostUsd": 0.223
+    "input": 22,
+    "cacheRead": 172635,
+    "cacheWrite": 30537,
+    "output": 11191,
+    "searches": 10,
+    "estimatedCostUsd": 0.156
   }
 }
