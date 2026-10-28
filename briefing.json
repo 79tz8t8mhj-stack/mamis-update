@@ -1,51 +1,18 @@
 {
-  "date": "2026-10-27",
-  "generatedAt": "2026-10-27T04:54:45.448Z",
-  "text": "Guten Morgen! Hier ist Mamis Update für Dienstag, den 27. Oktober.\n\nIn Krefeld erwartet dich heute Nieselregen bei Temperaturen zwischen 11 und 17 Grad. Die Regenwahrscheinlichkeit liegt bei 92 Prozent, dazu weht der Wind mit bis zu 19 Kilometern pro Stunde. Der Schirm bleibt also besser griffbereit.\n\nUnser wichtigstes Thema kommt aus Israel. Laut NZZ wählt Israel heute ein neues Parlament. Die Handelsblatt-Umfragen der letzten Monate sehen das Lager von Ministerpräsident Benjamin Netanjahu bei etwa 50 der 120 Sitze in der Knesset. Für eine Mehrheit braucht es 61 Sitze. Sollten die Umfragen den Likud unterschätzt haben, könnte Netanjahu mit ultraorthodoxen und rechtsextremen Siedlerparteien doch auf die nötigen Mandate kommen. Sein wichtigster Herausforderer ist der frühere Generalstabschef Gadi Eisenkot, dessen Partei Jaschar sich in der politischen Mitte verortet und in jüngeren Umfragen knapp vor dem Likud liegt. Netanjahu sprach kurz vor der Wahl selbst von einem Patt. Laut Umfragen kommt aber keines der beiden Lager allein auf eine Mehrheit. In Israel entscheiden Blöcke, nicht Parteien. Entscheidend ist das Vertrauen der Knesset: Bis eine andere Regierung es hat, bleibt Netanjahu im Amt, und auch als geschäftsführender Regierungschef könnte er laut Handelsblatt sehr mächtig bleiben. Der Politologe Jonathan Rynhold hält eine Regierung ohne Netanjahu für durchaus möglich. Experten rechnen selbst bei einem Machtwechsel nicht mit einem schnellen Friedensschluss.\n\nBeim Thema Geld bleiben wir in Deutschland. Wie wiwo berichtet, fordert die Ministerpräsidentenkonferenz die Koalition auf, die Entlastung für Bürger und Unternehmen schnellstmöglich zu realisieren, also die Senkung der Stromsteuer. Außerdem verlangen die Länder einen zeitigen Vorschlag zum angekündigten Spritpreisdeckel. Im Koalitionsvertrag von Union und SPD steht eine Senkung auf das europäische Mindestmaß, bislang wurde sie aber nur für Industrie, Gewerbe sowie Land- und Forstwirtschaft umgesetzt. Die jährlichen Kosten belaufen sich voraussichtlich auf rund 5,4 Milliarden Euro. Die Steuerschätzung sieht für den Bund im kommenden Jahr zwar 4,1 Milliarden Euro Mehreinnahmen vor, doch Finanzminister Lars Klingbeil bezweifelt, dass das für die Senkung reicht. Er hat Zweifel, dass dies finanzierbar ist, und fordert Vorschläge, wie man das Ganze finanziert. Bremens Regierungschef Andreas Bovenschulte hält die Senkung für richtig, sieht aber finanzielle Konsequenzen. Nordrhein-Westfalens Ministerpräsident Hendrik Wüst hält die Energiekosten für viele inzwischen für eine enorme Belastung. Da die Stromsteuer allein dem Bund zufließt, würden die Länderhaushalte durch eine Senkung nicht belastet.\n\nKurz noch aus Serbien: Laut NZZ verliert Vucic bei der vorgezogenen Parlamentswahl deutlich gegen die Studentenbewegung.\n\nZum Schluss ein Befund aus der Wissenschaft. Laut scinexx haben Forschende eine Auswertung britischer Gesundheitsdaten vorgelegt, die Forschenden kamen aus Guangzhou in China. Sie fragten, ob die Zuckermenge in Schwangerschaft und früher Kindheit Jahrzehnte später mit Angststörungen und Depressionen zusammenhängt. Das war bisher kaum untersucht. Aus den Geburtsdaten schätzte das Team, wie lange jemand von der Empfängnis bis zum zweiten Geburtstag unter einer Zuckerbegrenzung aufwuchs. Sie werteten ärztlich dokumentierte und selbst berichtete Diagnosen bis 2022 aus, insgesamt 7.663 Angststörungen und 9.197 Depressionen. Das Ergebnis: Eine längere Zuckerbegrenzung ging mit einem geringeren Erkrankungsrisiko einher. Es handelt sich aber um Beobachtungsdaten, die keinen ursächlichen Schutz beweisen. Ob der Zucker selbst die Psyche beeinflusst, bleibt damit offen.\n\nDas war Mamis Update. Hab einen schönen Tag!",
-  "weather": "Nieselregen, Tiefstwert 11 Grad, Höchstwert 17 Grad, Regenwahrscheinlichkeit 92 Prozent, Wind bis 19 Kilometer pro Stunde",
-  "sources": [
-    {
-      "title": "Die wichtigsten Antworten zur israelischen Parlamentswahl",
-      "url": "https://www.nzz.ch/international/die-wichtigsten-antworten-zur-israelischen-parlamentswahl-ld.10045185"
-    },
-    {
-      "title": "Israel: Netanjahu könnte die Wahl verlieren",
-      "url": "https://www.handelsblatt.com/politik/international/israel-netanjahu-koennte-die-wahl-verlieren-und-dennoch-regieren/100260417.html"
-    },
-    {
-      "title": "Wahlen in Israel: Kann Gadi Eisenkot Benjamin Netanyahu schlagen?",
-      "url": "https://www.nzz.ch/international/wahlen-in-israel-kann-gadi-eisenkot-benjamin-netanyahu-schlagen-ld.10038303"
-    },
-    {
-      "title": "Wegweisende Abstimmung: Schicksalswahl in Israel: Es geht um mehr ...",
-      "url": "https://www.handelsblatt.com/politik/international/wegweisende-abstimmung-schicksalswahl-in-israel-es-geht-um-mehr-als-netanjahu/100264744.html"
-    },
-    {
-      "title": "Wegweisende Abstimmung: Was bedeutet die Wahl in Israel für Krieg ...",
-      "url": "https://www.wiwo.de/politik/ausland/wegweisende-abstimmung-was-bedeutet-die-wahl-in-israel-fuer-krieg-und-frieden/100264853.html"
-    },
-    {
-      "title": "Ministerpräsidentenkonferenz: Länder fordern schnelle Senkung ...",
-      "url": "https://www.wiwo.de/politik/deutschland/ministerpraesidentenkonferenz-laender-fordern-schnelle-senkung-der-stromsteuer-fuer-alle/100264217.html"
-    },
-    {
-      "title": "Steuerschätzung: Klingbeil: Steuerplus reicht nicht für ...",
-      "url": "https://www.wiwo.de/politik/deutschland/steuerschaetzung-klingbeil-steuerplus-reicht-nicht-fuer-stromsteuer-senkung/100264291.html"
-    },
-    {
-      "title": "Depressionen & Co: Ernährung in den ersten 1.000 Tagen beeinflusst ...",
-      "url": "https://www.scinexx.de/news/medizin/depressionen-co-ernaehrung-in-den-ersten-1-000-tagen-beeinflusst-die-psyche-langfristig/"
-    }
-  ],
+  "date": "2026-10-28",
+  "generatedAt": "2026-10-28T05:03:23.376Z",
+  "text": "Guten Morgen! Hier ist Mamis Update für Mittwoch, den 28. Oktober. In Krefeld bleibt es heute feucht: Leichter Nieselregen begleitet den Tag, die Temperaturen liegen zwischen 9 und 14 Grad, der Wind weht mit bis zu 12 Kilometern pro Stunde. Die Regenwahrscheinlichkeit beträgt 51 Prozent.\n\nZuerst zu den Nachrichten aus Israel. Dort hat am Dienstag die Parlamentswahl stattgefunden, und laut Handelsblatt lag die Wahlbeteiligung bei 77,7 Prozent, so hoch wie seit mehr als einem Vierteljahrhundert nicht. Die rechtskonservative Likud-Partei von Ministerpräsident Benjamin Netanjahu wurde nach ersten Prognosen zwar stärkste Kraft. Doch laut Hochrechnung des Senders Channel 12 kommt das Oppositionslager auf 52 der 120 Sitze, die Regierungskoalition auf 50. Keiner der beiden Blöcke erreicht damit die Mehrheit. Nach der Wahl vor vier Jahren hatte Netanjahu eine Koalition mit über 64 Sitzen gebildet. Netanjahus wichtigster Herausforderer, der frühere Militärchef Gadi Eisenkot, kündigte an, die Regierung ablösen zu wollen. Die Auszählung soll sich laut Handelsblatt bis einschließlich Mittwoch hinziehen. Wie die Mehrheitsbildung ausgeht, ist also noch offen.\n\nEin Thema mit direktem Alltagsbezug sind die Löhne. In der Metall- und Elektroindustrie verhandeln Gewerkschaft und Arbeitgeber für gut 3,7 Millionen Beschäftigte. Die IG Metall fordert fünf Prozent mehr Geld, um die Kaufkraft trotz steigender Preise zu sichern. Die Arbeitgeber haben in der zweiten Verhandlungsrunde 1,3 Prozent angeboten, allerdings erst ab Sommer 2028, wie Handelsblatt berichtet. Warnstreiks sind laut Handelsblatt ab Ende dieser Woche möglich. Der Arbeitgeberverband Gesamtmetall verweist zugleich auf die Krise der Branche. In einer Blitzumfrage gaben 42 Prozent der Betriebe an, Stellen abbauen zu wollen. Gesamtmetall verlangt von der Bundesregierung rasche Reformen für den Standort und eine maßvolle Tarifrunde.\n\nAus Berlin: Die Nachfolge von Bundespräsident Frank-Walter Steinmeier ist offen. Die hessische CDU-Politikerin Ines Claus hat Interesse am Amt signalisiert, wie Handelsblatt meldet. Die CSU-Politikerin Ilse Aigner gilt als Favoritin der CSU, und SPD-Fraktionschef Matthias Miersch hat sich ebenfalls für sie ausgesprochen. Laut NZZ sind sich CDU und CSU in dieser Frage allerdings nicht einig. Steinmeier befindet sich in seiner zweiten und letzten Amtszeit. Union und SPD verfügen in der Bundesversammlung über eine klare Mehrheit, die Personalie wirkt sich laut Handelsblatt auch auf die Debatte über einen möglichen Kanzlerwechsel aus.\n\nNun zur Wissenschaft. Forschende der Osaka Metropolitan University haben untersucht, wie niedriges Testosteron und viel Fruchtzucker, also Fruktose, gemeinsam die Leber belasten. Das Team nutzte achtwöchige männliche Mäuse in sechs Gruppen. Ein Teil der Tiere wurde kastriert, um den Testosteronspiegel zu senken, die übrigen wurden scheinoperiert. Einige Gruppen erhielten zusätzlich Antibiotika. Laut ScienceDaily vom 27. Oktober nahm die Lebermasse bei kastrierten Mäusen mit Fruktose stärker zu. Die Gabe von Antibiotika verringerte diesen Anstieg. Das Team führt die Verfettung auf Darmbakterien zurück, die im Darm mehr Pyruvat bilden, einen Zwischenstoff des Zuckerstoffwechsels. Die Fettleber, im Fachjargon MASLD genannt, betrifft laut der Meldung rund 40 Prozent der erwachsenen Männer weltweit. Die Befunde stammen aus Tierversuchen an Mäusen. Ob sich der Mechanismus beim Menschen in gleicher Weise zeigt, ist nicht belegt.\n\nDas war Mamis Update. Hab einen schönen Tag!",
+  "weather": "leichter Nieselregen, Tiefstwert 9 Grad, Höchstwert 14 Grad, Regenwahrscheinlichkeit 51 Prozent, Wind bis 12 Kilometer pro Stunde",
+  "sources": [],
   "stats": {
-    "words": 513,
+    "words": 493,
     "model": "claude-haiku-5-5",
     "effort": "medium",
-    "input": 14,
-    "cacheRead": 375373,
-    "cacheWrite": 115887,
-    "output": 23388,
-    "searches": 7,
-    "estimatedCostUsd": 0.22
+    "input": 26,
+    "cacheRead": 440116,
+    "cacheWrite": 66389,
+    "output": 17010,
+    "searches": 10,
+    "estimatedCostUsd": 0.206
   }
 }
